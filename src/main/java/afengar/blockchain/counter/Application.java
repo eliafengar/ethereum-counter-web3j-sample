@@ -1,5 +1,6 @@
 package afengar.blockchain.counter;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,9 @@ import afengar.blockchain.counter.handlers.CounterHandler;
 
 @SpringBootApplication
 public class Application {
+
+	@Value("${network.address}")
+	private String networkAddress;
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -30,6 +34,6 @@ public class Application {
 
 	@Bean
 	public Web3j web3() {
-		return Web3j.build(new HttpService("http://<Ethereum Transaction Node Host Name or IP Address>:8545"));
+		return Web3j.build(new HttpService(this.networkAddress));
 	}
 }

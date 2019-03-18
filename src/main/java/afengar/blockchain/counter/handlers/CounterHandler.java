@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutionException;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,12 @@ public class CounterHandler {
 
 	@Autowired
 	private Web3j web3;
+
+	@Value("${network.wallet.key}")
+	private String walletKey;
+
+	@Value("${network.contract.address}")
+	private String contractAddress;
 
 	private Counter contract;
 
@@ -84,7 +91,7 @@ public class CounterHandler {
 
 	public Mono<ServerResponse> deployContract(ServerRequest request) {
 		try {
-			Credentials credentials = Credentials.create("<Wallet Private Key>");
+			Credentials credentials = Credentials.create(this.walletKey);
 
 			CompletableFuture<Counter> result = Counter
 					.deploy(this.web3, credentials, Contract.GAS_PRICE, Contract.GAS_LIMIT, BigInteger.ZERO)
@@ -101,10 +108,9 @@ public class CounterHandler {
 		try {
 			// String contractAddress = request.queryParam("contractAddress").get();
 
-			String contractAddress = "<Contract Address>";
-			Credentials credentials = Credentials.create("<Wallet Private Key>");
+			Credentials credentials = Credentials.create(this.walletKey);
 
-			this.contract = Counter.load(contractAddress, this.web3, credentials, Contract.GAS_PRICE,
+			this.contract = Counter.load(this.contractAddress, this.web3, credentials, Contract.GAS_PRICE,
 					Contract.GAS_LIMIT);
 		} catch (Exception e) {
 			e.printStackTrace();
